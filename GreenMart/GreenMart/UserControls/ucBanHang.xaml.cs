@@ -158,7 +158,28 @@ namespace GreenMart.UserControls
                 foreach (var item in cart)
                     bus.ThemChiTiet(maHD, item.MaSP, item.SoLuong, item.DonGia);
                 
-                MessageBox.Show($"Thanh toán thành công!\nMã HD: {maHD}\nTổng thu: {tongTien:#,##0} ₫\nTiền thừa: {Math.Max(0, khachDua - tongTien):#,##0} ₫", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
+                if (MessageBox.Show($"Thanh toán thành công!\nMã HD: {maHD}\nTổng thu: {tongTien:#,##0} ₫\nTiền thừa: {Math.Max(0, khachDua - tongTien):#,##0} ₫\n\nBạn có muốn in hóa đơn ra file PDF không?", "Thành công", MessageBoxButton.YesNo, MessageBoxImage.Information) == MessageBoxResult.Yes)
+                {
+                    // Convert cart to DataTable
+                    DataTable dtChiTiet = new DataTable();
+                    dtChiTiet.Columns.Add("TenSP", typeof(string));
+                    dtChiTiet.Columns.Add("SoLuong", typeof(int));
+                    dtChiTiet.Columns.Add("DonGia", typeof(decimal));
+                    dtChiTiet.Columns.Add("ThanhTien", typeof(decimal));
+                    foreach (var item in cart)
+                        dtChiTiet.Rows.Add(item.TenSP, item.SoLuong, item.DonGia, item.ThanhTien);
+                        
+                    string tenKH = txtKH.Text.Split('-')[0].Trim();
+                    var dtStore = bus.LayThongTinCuaHangTuHoaDon(maHD);
+                    string storeName = dtStore.Rows.Count > 0 ? dtStore.Rows[0]["TenCH"].ToString()! : "GREEN MART";
+                    string storeAddr = dtStore.Rows.Count > 0 ? dtStore.Rows[0]["DiaChi"].ToString()! : "123 Nguyễn Văn Linh, Q.7, TP.HCM";
+                    string storePhone = dtStore.Rows.Count > 0 ? dtStore.Rows[0]["SoDienThoai"].ToString()! : "1900 1234";
+
+                    GreenMart.Services.PdfHelper.ExportInvoiceToPdf(
+                        maHD, MainWindow.CurrentNV, tenKH == "Không tìm thấy → Khách vãng lai" ? "" : tenKH, 
+                        dtChiTiet, tongTien, giamGia, khachDua, Math.Max(0, khachDua - tongTien), DateTime.Now,
+                        storeName, storeAddr, storePhone);
+                }
                 
                 // Reset form
                 cart.Clear();

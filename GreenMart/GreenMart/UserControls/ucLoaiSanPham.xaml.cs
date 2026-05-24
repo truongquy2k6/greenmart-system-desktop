@@ -20,38 +20,35 @@ namespace GreenMart.UserControls
             LoadData();
         }
 
-        void btnTim_Click(object s, RoutedEventArgs e) => LoadData();
+        void btnTim_Click(object s, RoutedEventArgs e) 
+        {
+            currentPage = 1;
+            LoadData();
+        }
 
         void LoadData()
         {
-            allData = bus.HienThi();
-            string kw = txtSearch.Text.Trim().ToLower();
-            if (!string.IsNullOrEmpty(kw))
-            {
-                var filtered = allData.AsEnumerable().Where(r => 
-                    r["TenLoai"].ToString()!.ToLower().Contains(kw) || 
-                    r["MaLoai"].ToString()!.ToLower().Contains(kw)
-                );
-                if (filtered.Any()) allData = filtered.CopyToDataTable();
-                else allData = allData.Clone();
-            }
-            currentPage = 1;
+            string kw = txtSearch.Text.Trim();
+            allData = bus.TimKiem(kw, currentPage, pageSize);
             UpdateGrid();
         }
 
         void UpdateGrid()
         {
             if (allData.Rows.Count == 0) { dgData.ItemsSource = null; txtPage.Text = "0 / 0"; return; }
-            totalPages = (int)Math.Ceiling((double)allData.Rows.Count / pageSize);
+            
+            int totalRows = Convert.ToInt32(allData.Rows[0]["TotalRows"]);
+            totalPages = (int)Math.Ceiling((double)totalRows / pageSize);
+            
             if (currentPage > totalPages) currentPage = totalPages;
             if (currentPage < 1) currentPage = 1;
             txtPage.Text = $"{currentPage} / {totalPages}";
-            var paginated = allData.AsEnumerable().Skip((currentPage - 1) * pageSize).Take(pageSize);
-            dgData.ItemsSource = paginated.Any() ? paginated.CopyToDataTable().DefaultView : null;
+            
+            dgData.ItemsSource = allData.DefaultView;
         }
 
-        void btnPrev_Click(object s, RoutedEventArgs e) { if (currentPage > 1) { currentPage--; UpdateGrid(); } }
-        void btnNext_Click(object s, RoutedEventArgs e) { if (currentPage < totalPages) { currentPage++; UpdateGrid(); } }
+        void btnPrev_Click(object s, RoutedEventArgs e) { if (currentPage > 1) { currentPage--; LoadData(); } }
+        void btnNext_Click(object s, RoutedEventArgs e) { if (currentPage < totalPages) { currentPage++; LoadData(); } }
 
         void btnThem_Click(object s, RoutedEventArgs e)
         {

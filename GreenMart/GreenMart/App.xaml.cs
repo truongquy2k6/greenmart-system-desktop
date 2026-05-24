@@ -1,5 +1,7 @@
 using System.Threading;
 using System.Windows;
+using System.IO;
+using System.Text.Json;
 
 namespace GreenMart
 {
@@ -27,6 +29,29 @@ namespace GreenMart
                 // Đóng phiên bản mới định mở này lại
                 Application.Current.Shutdown();
                 return;
+            }
+
+            // --- KHỞI TẠO CÁC DỊCH VỤ BÊN THỨ 3 ---
+            try
+            {
+                if (File.Exists("appsettings.json"))
+                {
+                    string jsonString = File.ReadAllText("appsettings.json");
+                    using JsonDocument doc = JsonDocument.Parse(jsonString);
+                    var root = doc.RootElement.GetProperty("Cloudinary");
+                    string cloudName = root.GetProperty("CloudName").GetString() ?? "";
+                    string apiKey = root.GetProperty("ApiKey").GetString() ?? "";
+                    string apiSecret = root.GetProperty("ApiSecret").GetString() ?? "";
+                    
+                    if (cloudName != "your_cloud_name")
+                    {
+                        GreenMart.Services.CloudinaryHelper.Initialize(cloudName, apiKey, apiSecret);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Không thể tải cấu hình Cloudinary từ appsettings.json: " + ex.Message, "Lỗi cấu hình", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
 
             base.OnStartup(e);

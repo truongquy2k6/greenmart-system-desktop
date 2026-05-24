@@ -11,9 +11,14 @@ namespace DAL
         /// <summary>
         /// Lấy danh sách tất cả các loại sản phẩm
         /// </summary>
-        public DataTable HienThi()
+        public DataTable HienThi(int pageNumber = 1, int pageSize = 10000)
         {
-            return DatabaseHelper.ExecuteQuery("sp_HienThiLoaiSanPham");
+            SqlParameter[] parameters = new[]
+            {
+                new SqlParameter("@PageNumber", pageNumber),
+                new SqlParameter("@PageSize", pageSize)
+            };
+            return DatabaseHelper.ExecuteQuery("sp_HienThiLoaiSanPham", parameters);
         }
 
         /// <summary>
@@ -60,11 +65,13 @@ namespace DAL
         /// <summary>
         /// Tìm kiếm loại sản phẩm theo từ khóa (Mã hoặc Tên)
         /// </summary>
-        public DataTable TimKiem(string kw)
+        public DataTable TimKiem(string kw, int pageNumber = 1, int pageSize = 10000)
         {
             SqlParameter[] parameters = new[]
             {
-                new SqlParameter("@TuKhoa", kw)
+                new SqlParameter("@TuKhoa", kw ?? ""),
+                new SqlParameter("@PageNumber", pageNumber),
+                new SqlParameter("@PageSize", pageSize)
             };
 
             return DatabaseHelper.ExecuteQuery("sp_TimKiemLoaiSanPham", parameters);

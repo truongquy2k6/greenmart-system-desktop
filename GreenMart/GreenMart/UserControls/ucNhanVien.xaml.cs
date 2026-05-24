@@ -192,13 +192,15 @@ namespace GreenMart.UserControls
                     var r = (DataRowView)dg.SelectedItem;
                     string cu = $"Tên: {r["HoTen"]}, CV: {r["ChucVu"]}, TT: {r["TrangThai"]}";
                     string moi = $"Tên: {ten}, CV: {cv}, TT: {tt}";
-                    bus.CapNhat(ma, ten, cv, ns, gt, txtSDT.Text.Trim(), txtDC.Text.Trim(), txtTDN.Text.Trim(), txtMK.Password, ch, tt);
+                    string finalPassword = string.IsNullOrEmpty(txtMK.Password) ? r["MatKhau"].ToString()! : PasswordHelper.HashPassword(txtMK.Password);
+                    bus.CapNhat(ma, ten, cv, ns, gt, txtSDT.Text.Trim(), txtDC.Text.Trim(), txtTDN.Text.Trim(), finalPassword, ch, tt);
                     new LichSuBUS().GhiNhanChinhSua(MainWindow.CurrentNV, "NhanVien", "UPDATE", ma, cu, moi);
                 }
                 else
                 {
                     if (string.IsNullOrWhiteSpace(txtMK.Password)) { MessageBox.Show("Vui lòng nhập mật khẩu cho nhân viên mới!", "Thông báo"); return; }
-                    bus.Them(ma, ten, cv, ns, gt, txtSDT.Text.Trim(), txtDC.Text.Trim(), txtTDN.Text.Trim(), txtMK.Password, ch, tt);
+                    string finalPassword = PasswordHelper.HashPassword(txtMK.Password);
+                    bus.Them(ma, ten, cv, ns, gt, txtSDT.Text.Trim(), txtDC.Text.Trim(), txtTDN.Text.Trim(), finalPassword, ch, tt);
                     new LichSuBUS().GhiNhanChinhSua(MainWindow.CurrentNV, "NhanVien", "INSERT", ma, "", $"Tên: {ten}, CV: {cv}, TT: {tt}");
                 }
                 LoadData();

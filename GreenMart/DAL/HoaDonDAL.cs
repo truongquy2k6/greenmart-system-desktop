@@ -87,6 +87,18 @@ namespace DAL
         }
 
         /// <summary>
+        /// Lấy thông tin cửa hàng từ hóa đơn
+        /// </summary>
+        public DataTable LayThongTinCuaHangTuHoaDon(string maHD)
+        {
+            SqlParameter[] parameters = new[]
+            {
+                new SqlParameter("@MaHD", maHD)
+            };
+            return DatabaseHelper.ExecuteQuery("sp_LayThongTinCuaHangTuHoaDon", parameters);
+        }
+
+        /// <summary>
         /// Tìm nhanh khách hàng theo số điện thoại (Dành cho màn hình POS)
         /// </summary>
         public DataTable TimKhachHang(string sdt)

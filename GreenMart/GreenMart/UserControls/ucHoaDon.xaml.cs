@@ -100,33 +100,22 @@ namespace GreenMart.UserControls
             string maHD = r["MaHD"].ToString()!.Trim();
             var dt = bus.LayChiTiet(maHD);
             
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine("===========================================");
-            sb.AppendLine("           GREEN MART SUPERMARKET          ");
-            sb.AppendLine("===========================================");
-            sb.AppendLine($"Mã Hóa Đơn: {maHD}");
-            sb.AppendLine($"Ngày lập: {Convert.ToDateTime(r["NgayLap"]):dd/MM/yyyy HH:mm}");
-            sb.AppendLine($"Khách hàng: {r["TenKhachHang"]}");
-            sb.AppendLine("-------------------------------------------");
-            sb.AppendLine(string.Format("{0,-20} | {1,-4} | {2,10}", "Sản phẩm", "SL", "Thành tiền"));
-            sb.AppendLine("-------------------------------------------");
-            foreach(DataRow dr in dt.Rows)
-            {
-                string tenSP = dr["TenSP"].ToString()!;
-                if(tenSP.Length > 20) tenSP = tenSP.Substring(0, 17) + "...";
-                sb.AppendLine(string.Format("{0,-20} | {1,-4} | {2,10:N0}", tenSP, dr["SoLuong"], dr["ThanhTien"]));
-            }
-            sb.AppendLine("-------------------------------------------");
-            sb.AppendLine($"TỔNG TIỀN: {Convert.ToDecimal(r["TongTien"]):#,##0} đ");
-            sb.AppendLine("===========================================");
-            sb.AppendLine("         CẢM ƠN QUÝ KHÁCH HẸN GẶP LẠI      ");
-            sb.AppendLine("===========================================");
-            
-            var dialog = new Microsoft.Win32.SaveFileDialog { Filter = "Text File|*.txt", FileName = $"HoaDon_{maHD}.txt" };
-            if (dialog.ShowDialog() == true) {
-                File.WriteAllText(dialog.FileName, sb.ToString(), Encoding.UTF8);
-                MessageBox.Show("Đã in hóa đơn thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
+            decimal tongTien = Convert.ToDecimal(r["TongTien"]);
+            decimal giamGia = Convert.ToDecimal(r["GiamGia"]);
+            decimal khachDua = tongTien; // Mặc định khách đưa = tổng tiền vì db không lưu
+            decimal tienThua = 0;
+
+            string tenNV = r["TenNhanVien"].ToString()!;
+            string tenKH = r["TenKhachHang"].ToString()!;
+            DateTime ngayLap = Convert.ToDateTime(r["NgayLap"]);
+
+            var dtStore = bus.LayThongTinCuaHangTuHoaDon(maHD);
+            string storeName = dtStore.Rows.Count > 0 ? dtStore.Rows[0]["TenCH"].ToString()! : "GREEN MART";
+            string storeAddr = dtStore.Rows.Count > 0 ? dtStore.Rows[0]["DiaChi"].ToString()! : "123 Nguyễn Văn Linh, Q.7, TP.HCM";
+            string storePhone = dtStore.Rows.Count > 0 ? dtStore.Rows[0]["SoDienThoai"].ToString()! : "1900 1234";
+
+            GreenMart.Services.PdfHelper.ExportInvoiceToPdf(
+                maHD, tenNV, tenKH, dt, tongTien, giamGia, khachDua, tienThua, ngayLap, storeName, storeAddr, storePhone);
         }
 
         void btnHuy_Click(object s, RoutedEventArgs e)

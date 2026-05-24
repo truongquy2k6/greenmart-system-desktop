@@ -11,9 +11,14 @@ namespace DAL
         /// <summary>
         /// Lấy danh sách tất cả sản phẩm cùng với thông tin Nhà cung cấp và Loại sản phẩm
         /// </summary>
-        public DataTable HienThi()
+        public DataTable HienThi(int pageNumber = 1, int pageSize = 10000)
         {
-            return DatabaseHelper.ExecuteQuery("sp_HienThiSanPham");
+            SqlParameter[] parameters = new[]
+            {
+                new SqlParameter("@PageNumber", pageNumber),
+                new SqlParameter("@PageSize", pageSize)
+            };
+            return DatabaseHelper.ExecuteQuery("sp_HienThiSanPham", parameters);
         }
 
         /// <summary>
@@ -71,9 +76,6 @@ namespace DAL
             DatabaseHelper.ExecuteNonQuery("sp_XoaSanPham", parameters);
         }
 
-        /// <summary>
-        /// Tìm kiếm sản phẩm theo từ khóa (Mã, Tên, Nhà cung cấp, Loại sản phẩm)
-        /// </summary>
         public DataTable TimKiem(string kw)
         {
             SqlParameter[] parameters = new[]
@@ -82,6 +84,25 @@ namespace DAL
             };
 
             return DatabaseHelper.ExecuteQuery("sp_TimKiemSanPham1", parameters);
+        }
+
+        /// <summary>
+        /// Lọc sản phẩm nâng cao nhiều tiêu chí có phân trang
+        /// </summary>
+        public DataTable LocNangCao(string tuKhoa, string maLoai, string maNCC, string donViTinh, string trangThai, int pageNumber, int pageSize)
+        {
+            SqlParameter[] parameters = new[]
+            {
+                new SqlParameter("@TuKhoa", tuKhoa ?? ""),
+                new SqlParameter("@MaLoai", maLoai ?? ""),
+                new SqlParameter("@MaNCC", maNCC ?? ""),
+                new SqlParameter("@DonViTinh", donViTinh ?? ""),
+                new SqlParameter("@TrangThai", trangThai ?? ""),
+                new SqlParameter("@PageNumber", pageNumber),
+                new SqlParameter("@PageSize", pageSize)
+            };
+
+            return DatabaseHelper.ExecuteQuery("sp_LocNangCaoSanPham", parameters);
         }
 
         /// <summary>
