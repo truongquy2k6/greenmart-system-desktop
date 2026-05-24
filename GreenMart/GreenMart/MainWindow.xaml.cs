@@ -71,6 +71,11 @@ namespace GreenMart
 
         private void btnOpenChat_Click(object sender, RoutedEventArgs e)
         {
+            if (CurrentRole != "Admin" && CurrentRole != "Quản lý")
+            {
+                MessageBox.Show("Tính năng Trợ lý AI chỉ dành cho Admin và Quản lý!", "Từ chối truy cập", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
             chatBot.Visibility = chatBot.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
         }
 
@@ -109,6 +114,7 @@ namespace GreenMart
                     SetVisible(grpLichSu, false);
                     SetVisible(btnLSTC, false);
                     SetVisible(btnLSCS, false);
+                    SetVisible(btnOpenChat, false);
                     SetRoleBadge("Nhân viên kho", "#1565C0", "#E3F2FD", "Warehouse");
                     break;
 
@@ -128,6 +134,7 @@ namespace GreenMart
                     SetVisible(grpLichSu, false);
                     SetVisible(btnLSTC, false);
                     SetVisible(btnLSCS, false);
+                    SetVisible(btnOpenChat, false);
                     SetRoleBadge("Nhân viên bán hàng", "#6A1B9A", "#F3E5F5", "CashRegister");
                     break;
 
@@ -150,6 +157,7 @@ namespace GreenMart
                     SetVisible(grpLichSu, false);
                     SetVisible(btnLSTC, false);
                     SetVisible(btnLSCS, false);
+                    SetVisible(btnOpenChat, false);
                     SetRoleBadge(role, "#37474F", "#ECEFF1", "Account");
                     break;
             }

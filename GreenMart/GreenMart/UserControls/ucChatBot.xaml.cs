@@ -107,14 +107,22 @@ namespace GreenMart.UserControls
                 var busKM = new BUS.KhuyenMaiBUS();
                 var busNCC = new BUS.NhaCungCapBUS();
                 var busHD = new BUS.HoaDonBUS();
+                var busKho = new BUS.KhoBUS();
+                var busLSP = new BUS.LoaiSanPhamBUS();
+                var busCH = new BUS.CuaHangBUS();
+                var busNV = new BUS.NhanVienBUS();
 
-                string dbContext = "\n\n--- TRÍCH XUẤT DỮ LIỆU CÁC BẢNG (Tối đa 50 dòng mỗi bảng) ---\n";
-                dbContext += "\nBảng SẢN PHẨM:\n" + ExportTableToCsv(busSP.HienThi(), 200);
-                dbContext += "\nBảng KHÁCH HÀNG:\n" + ExportTableToCsv(busKH.HienThi(), 200);
-                dbContext += "\nBảng KHUYẾN MÃI:\n" + ExportTableToCsv(busKM.HienThi(), 200);
-                dbContext += "\nBảng NHÀ CUNG CẤP:\n" + ExportTableToCsv(busNCC.HienThi(), 200);
-                dbContext += "\nBảng HÓA ĐƠN (dùng để tính doanh thu ngày/tháng):\n" + ExportTableToCsv(busHD.TimKiem(new DateTime(2000, 1, 1), DateTime.Now), 200);
-                // Cố tình bỏ qua bảng Nhân Viên (NhanVienBUS) theo yêu cầu bảo mật
+                string dbContext = "\n\n--- TRÍCH XUẤT DỮ LIỆU CÁC BẢNG (Tối đa 20 dòng mỗi bảng) ---\n";
+                dbContext += "\nBảng SẢN PHẨM:\n" + ExportTableToCsv(busSP.HienThi(), 20);
+                dbContext += "\nBảng LOẠI SẢN PHẨM:\n" + ExportTableToCsv(busLSP.HienThi(), 20);
+                dbContext += "\nBảng CỬA HÀNG:\n" + ExportTableToCsv(busCH.HienThi(), 20);
+                dbContext += "\nBảng NHÂN VIÊN:\n" + ExportTableToCsv(busNV.HienThi(), 20);
+                dbContext += "\nBảng KHÁCH HÀNG:\n" + ExportTableToCsv(busKH.HienThi(), 20);
+                dbContext += "\nBảng KHUYẾN MÃI:\n" + ExportTableToCsv(busKM.HienThi(), 20);
+                dbContext += "\nBảng NHÀ CUNG CẤP:\n" + ExportTableToCsv(busNCC.HienThi(), 20);
+                dbContext += "\nBảng HÓA ĐƠN (dùng để tính doanh thu ngày/tháng):\n" + ExportTableToCsv(busHD.TimKiem(new DateTime(2000, 1, 1), DateTime.Now), 20);
+                dbContext += "\nBảng KHO:\n" + ExportTableToCsv(busKho.HienThi(), 20);
+                dbContext += "\nBảng CHI TIẾT KHO (chứa số lượng tồn kho theo sản phẩm):\n" + ExportTableToCsv(busKho.HienThiTatCaChiTiet(), 20);
 
                 return baseStats + dbContext;
             }

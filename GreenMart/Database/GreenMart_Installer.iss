@@ -30,7 +30,7 @@ VersionInfoProductVersion={#MyAppVersion}
 ; Tên file cài đặt đầu ra
 OutputBaseFilename=GreenMart_Setup_v{#MyAppVersion}
 ; Icon cho file cài đặt
-SetupIconFile=d:\DemoWPF\GreenMart\GreenMart\checkout.ico
+SetupIconFile=d:\DemoWPF\GreenMartApp\GreenMart\checkout.ico
 UninstallDisplayIcon={app}\{#MyAppExeName}
 ; Giảm mức độ nén và tắt SolidCompression để AV dễ dàng quét nội dung bên trong
 Compression=lzma
@@ -55,8 +55,8 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 ; Source là đường dẫn đến thư mục build Release của bạn
-Source: "d:\DemoWPF\GreenMartApp\GreenMart\bin\Release\net8.0-windows\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "d:\DemoWPF\GreenMartApp\GreenMart\bin\Release\net8.0-windows\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "d:\DemoWPF\GreenMartApp\GreenMart\GreenMart\bin\Release\net8.0-windows\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "d:\DemoWPF\GreenMartApp\GreenMart\GreenMart\bin\Release\net8.0-windows\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; Chú ý: Đảm bảo bạn đã copy file icon vào thư mục đích nếu muốn dùng làm icon shortcut
 
 [Icons]

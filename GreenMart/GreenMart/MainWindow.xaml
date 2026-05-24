@@ -207,7 +207,7 @@
             </Grid>
 
             <!-- AI Assistant Floating Button -->
-            <Button Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,30,30" Style="{StaticResource MaterialDesignFloatingActionSecondaryButton}" Width="64" Height="64" Background="#1A73E8" BorderThickness="0" Click="btnOpenChat_Click">
+            <Button x:Name="btnOpenChat" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,30,30" Style="{StaticResource MaterialDesignFloatingActionSecondaryButton}" Width="64" Height="64" Background="#1A73E8" BorderThickness="0" Click="btnOpenChat_Click">
                 <materialDesign:PackIcon Kind="RobotOutline" Width="32" Height="32" Foreground="White"/>
             </Button>
 

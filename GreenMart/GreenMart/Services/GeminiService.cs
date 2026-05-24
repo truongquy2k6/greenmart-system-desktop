@@ -29,7 +29,7 @@ namespace GreenMart.Services
             }
             catch { }
             
-            _endpoint = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key={_apiKey}";
+            _endpoint = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key={_apiKey}";
         }
 
         public async Task<string> SendMessageAsync(string userMessage, string contextData)
@@ -86,6 +86,10 @@ RÀNG BUỘC NGHIÊM NGẶT:
                                 .GetProperty("text").GetString();
                             return text ?? "Không có câu trả lời.";
                         }
+                    }
+                    else if (response.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
+                    {
+                        return "Bot đang nhận quá nhiều yêu cầu cùng lúc (vượt giới hạn API miễn phí). Vui lòng đợi khoảng 1 phút rồi thử lại nhé!";
                     }
                     else
                     {
