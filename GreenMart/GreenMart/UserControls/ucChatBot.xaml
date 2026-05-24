@@ -1,0 +1,66 @@
+<UserControl x:Class="GreenMart.UserControls.ucChatBot"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             Width="350" Height="500">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </UserControl.Resources>
+    <materialDesign:Card UniformCornerRadius="16" Background="White">
+        <materialDesign:Card.Effect>
+            <DropShadowEffect BlurRadius="20" ShadowDepth="5" Opacity="0.2"/>
+        </materialDesign:Card.Effect>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <Border Background="#1A73E8" CornerRadius="16,16,0,0" Padding="15">
+                <Grid>
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="RobotOutline" Width="28" Height="28" Foreground="White" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="Trợ lý AI GreenMart" FontWeight="Bold" FontSize="16" Foreground="White"/>
+                            <TextBlock Text="Powered by Gemini Flash" FontSize="11" Foreground="#BBDEFB"/>
+                        </StackPanel>
+                    </StackPanel>
+                    <Button Style="{StaticResource MaterialDesignIconButton}" HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="White" Width="30" Height="30" Padding="0" Click="btnClose_Click">
+                        <materialDesign:PackIcon Kind="Close" Width="20" Height="20"/>
+                    </Button>
+                </Grid>
+            </Border>
+
+            <!-- Chat Area -->
+            <ScrollViewer Grid.Row="1" x:Name="scrollChat" VerticalScrollBarVisibility="Auto" Background="#F8F9FA" Padding="10">
+                <StackPanel x:Name="pnlChatMessages" />
+            </ScrollViewer>
+
+            <!-- Input Area -->
+            <Border Grid.Row="2" Background="White" CornerRadius="0,0,16,16" Padding="10" BorderBrush="#EEEEEE" BorderThickness="0,1,0,0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <TextBox x:Name="txtMessage" materialDesign:HintAssist.Hint="Hỏi thống kê, HDSD..." BorderThickness="0" Background="#F1F3F4" Padding="15,10" VerticalAlignment="Center" FontSize="14" materialDesign:TextFieldAssist.DecorationVisibility="Collapsed" materialDesign:TextFieldAssist.TextFieldCornerRadius="20" KeyDown="txtMessage_KeyDown"/>
+                    
+                    <Button Grid.Column="1" Style="{StaticResource MaterialDesignIconButton}" Background="#1A73E8" Foreground="White" Width="40" Height="40" Margin="10,0,0,0" Click="btnSend_Click" x:Name="btnSend">
+                        <materialDesign:PackIcon Kind="Send" Width="18" Height="18" Margin="4,0,0,0"/>
+                    </Button>
+                </Grid>
+            </Border>
+            
+            <!-- Loading Indicator -->
+            <Border Grid.Row="1" x:Name="loadingIndicator" Background="#88FFFFFF" Visibility="Collapsed">
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}" IsIndeterminate="True" Value="0" Width="40" Height="40" Foreground="#1A73E8"/>
+                    <TextBlock Text="AI đang suy nghĩ..." Margin="0,10,0,0" FontWeight="SemiBold" Foreground="#1A73E8"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </materialDesign:Card>
+</UserControl>

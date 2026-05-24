@@ -47,6 +47,13 @@ namespace GreenMart
                 txtPageTitle.Text = "Bảng điều khiển";
                 btnDashboard.IsChecked = true;
             }
+
+            chatBot.OnCloseClicked = () => chatBot.Visibility = Visibility.Collapsed;
+        }
+
+        private void btnOpenChat_Click(object sender, RoutedEventArgs e)
+        {
+            chatBot.Visibility = chatBot.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
         }
 
         /// <summary>
