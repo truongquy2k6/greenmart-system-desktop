@@ -11,7 +11,7 @@ namespace BUS
         public string TaoMa() => dal.TaoMa();
         public DataTable LayChiTiet(string ma) => dal.LayChiTiet(ma);
         public DataTable TimKH(string sdt) => dal.TimKhachHang(sdt);
-        public DataTable TimSP(string kw, string maCH) => dal.TimSanPhamPOS(kw, maCH);
+        public DataTable TimSP(string kw, string maCH, string maLoai = "") => dal.TimSanPhamPOS(kw, maCH, maLoai);
         public void Huy(string ma) => dal.Huy(ma);
         public DataTable LayThongTinCuaHangTuHoaDon(string ma) => dal.LayThongTinCuaHangTuHoaDon(ma);
 

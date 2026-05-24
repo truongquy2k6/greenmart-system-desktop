@@ -114,12 +114,13 @@ namespace DAL
         /// <summary>
         /// Tìm kiếm sản phẩm tại màn hình bán hàng (chỉ lấy hàng có tồn kho tại cửa hàng)
         /// </summary>
-        public DataTable TimSanPhamPOS(string kw, string maCH)
+        public DataTable TimSanPhamPOS(string kw, string maCH, string maLoai = "")
         {
             SqlParameter[] parameters = new SqlParameter[]
             {
                 new("@TuKhoa", kw),
-                new("@MaCH", maCH)
+                new("@MaCH", maCH),
+                new("@MaLoai", maLoai)
             };
 
             return DatabaseHelper.ExecuteQuery("sp_TimKiemSanPham", parameters);

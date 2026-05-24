@@ -34,6 +34,15 @@ namespace GreenMart.UserControls
             fboCH.ItemsSource = filterStores.DefaultView;
             fboCH.SelectedIndex = 0;
 
+            if (MainWindow.CurrentRole != "Admin")
+            {
+                var fboAdminItem = fboCV.Items.Cast<ComboBoxItem>().FirstOrDefault(x => x.Content?.ToString() == "Admin");
+                if (fboAdminItem != null) fboCV.Items.Remove(fboAdminItem);
+
+                var cboAdminItem = cboCV.Items.Cast<ComboBoxItem>().FirstOrDefault(x => x.Content?.ToString() == "Admin");
+                if (cboAdminItem != null) cboCV.Items.Remove(cboAdminItem);
+            }
+
             fboCV.SelectedIndex = 0;
             fboStatus.SelectedIndex = 0;
         }

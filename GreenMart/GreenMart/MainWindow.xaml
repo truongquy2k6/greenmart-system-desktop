@@ -109,6 +109,7 @@
                         <RadioButton x:Name="btnNV" Content="Nhân viên" Style="{StaticResource SidebarBtn}" GroupName="nav" Click="Nav_Click" Tag="AccountTie" Uid="NV"/>
                         <RadioButton x:Name="btnCH" Content="Cửa hàng" Style="{StaticResource SidebarBtn}" GroupName="nav" Click="Nav_Click" Tag="Store" Uid="CH"/>
                         <RadioButton x:Name="btnKM" Content="Khuyến mãi" Style="{StaticResource SidebarBtn}" GroupName="nav" Click="Nav_Click" Tag="TagText" Uid="KM"/>
+                        <RadioButton x:Name="btnCauHinh" Content="Cấu hình" Style="{StaticResource SidebarBtn}" GroupName="nav" Click="Nav_Click" Tag="Cog" Uid="CauHinh"/>
                         
                         <!-- LỊCH SỬ - chỉ Admin -->
                         <TextBlock x:Name="grpLichSu" Text="LỊCH SỬ" Style="{StaticResource GroupLabel}"/>

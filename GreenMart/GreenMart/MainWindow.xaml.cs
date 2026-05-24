@@ -16,7 +16,7 @@ namespace GreenMart
     {
         public static string CurrentNV = "";
         public static string CurrentCH = "CH01";
-        public static string CurrentRole = ""; // "Quản lý" | "Nhân viên kho" | "Nhân viên bán hàng"
+        public static string CurrentRole = ""; // "Admin" | "Quản lý" | "Nhân viên kho" | "Nhân viên bán hàng"
 
         public MainWindow(string hoTen = "Quản trị viên", string chucVu = "Admin", string maNV = "NV00", string maCH = "CH01")
         {
@@ -56,8 +56,14 @@ namespace GreenMart
         {
             switch (role)
             {
+                case "Admin":
+                    // Admin: toàn quyền
+                    SetRoleBadge("Quản trị hệ thống", "#D32F2F", "#FFEBEE", "Security");
+                    break;
+
                 case "Quản lý":
-                    // Quản lý: toàn quyền — không ẩn gì
+                    // Quản lý: toàn quyền trừ cấu hình
+                    SetVisible(btnCauHinh, false);
                     SetRoleBadge("Quản lý", "#1B5E20", "#E8F5E9", "ShieldAccount");
                     break;
 
@@ -74,6 +80,7 @@ namespace GreenMart
                     SetVisible(btnNV, false);
                     SetVisible(btnCH, false);
                     SetVisible(btnKM, false);
+                    SetVisible(btnCauHinh, false);
                     SetVisible(grpLichSu, false);
                     SetVisible(btnLSTC, false);
                     SetVisible(btnLSCS, false);
@@ -92,6 +99,7 @@ namespace GreenMart
                     SetVisible(btnNV, false);
                     SetVisible(btnCH, false);
                     SetVisible(btnKM, false);
+                    SetVisible(btnCauHinh, false);
                     SetVisible(grpLichSu, false);
                     SetVisible(btnLSTC, false);
                     SetVisible(btnLSCS, false);
@@ -113,6 +121,7 @@ namespace GreenMart
                     SetVisible(btnNV, false);
                     SetVisible(btnCH, false);
                     SetVisible(btnKM, false);
+                    SetVisible(btnCauHinh, false);
                     SetVisible(grpLichSu, false);
                     SetVisible(btnLSTC, false);
                     SetVisible(btnLSCS, false);
@@ -162,6 +171,7 @@ namespace GreenMart
                 case "Kho":          pageContent.Content = new ucKhoHang();      txtPageTitle.Text = "Quản lý kho hàng";     break;
                 case "ChiTietKho":   pageContent.Content = new ucChiTietKho();   txtPageTitle.Text = "Chi tiết kho hàng";    break;
                 case "KM":           pageContent.Content = new ucKhuyenMai();    txtPageTitle.Text = "Khuyến mãi";           break;
+                case "CauHinh":      pageContent.Content = new ucCauHinh();      txtPageTitle.Text = "Cấu hình hệ thống";    break;
                 case "LSTC":         pageContent.Content = new ucLichSuTruyCap();txtPageTitle.Text = "Lịch sử truy cập";     break;
                 case "LSCS":         pageContent.Content = new ucLichSuChinhSua();txtPageTitle.Text = "Lịch sử chỉnh sửa";  break;
             }
@@ -174,7 +184,8 @@ namespace GreenMart
         {
             return CurrentRole switch
             {
-                "Quản lý"            => true, // Quản lý toàn quyền
+                "Admin"              => true, // Admin toàn quyền
+                "Quản lý"            => uid != "CauHinh", // Quản lý không được vào cấu hình
                 "Nhân viên kho"      => uid is "Kho" or "ChiTietKho" or "SanPham" or "LoaiSP" or "NCC",
                 "Nhân viên bán hàng" => uid is "POS" or "KH" or "HD" or "Dashboard",
                 _                    => uid == "Dashboard"

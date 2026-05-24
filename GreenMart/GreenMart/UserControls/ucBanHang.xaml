@@ -16,17 +16,33 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             
-            <materialDesign:Card UniformCornerRadius="10" Padding="15,5" Margin="0,0,0,15" Background="White">
+            <materialDesign:Card UniformCornerRadius="10" Padding="10" Margin="0,0,0,15" Background="White">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="Magnify" Width="26" Height="26" Foreground="#7F8C8D" VerticalAlignment="Center" Margin="5,0,15,0"/>
-                        <TextBox x:Name="txtSearch" Width="300" Height="45" BorderThickness="0" FontSize="16" materialDesign:HintAssist.Hint="Tìm theo tên hoặc mã SP..." materialDesign:TextFieldAssist.DecorationVisibility="Hidden" VerticalAlignment="Center" KeyDown="txtSearch_KeyDown" TextChanged="txtSearch_TextChanged"/>
-                    </StackPanel>
-                    <Button Grid.Column="1" Content="TÌM" Background="#4CAF50" BorderThickness="0" Height="45" Padding="25,0" FontWeight="Bold" FontSize="15" Click="btnTimSP_Click" materialDesign:ButtonAssist.CornerRadius="8"/>
+                    
+                    <Border Background="#F5F7FA" CornerRadius="8" BorderBrush="#E4E7EB" BorderThickness="1" Margin="0,0,15,0">
+                        <Grid Margin="15,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="200"/>
+                            </Grid.ColumnDefinitions>
+                            
+                            <materialDesign:PackIcon Kind="Magnify" Foreground="#95A5A6" VerticalAlignment="Center" Width="24" Height="24"/>
+                            
+                            <TextBox Grid.Column="1" x:Name="txtSearch" materialDesign:HintAssist.Hint="Tìm theo tên hoặc mã SP..." materialDesign:TextFieldAssist.DecorationVisibility="Collapsed" BorderThickness="0" VerticalAlignment="Center" Background="Transparent" FontSize="15" Margin="10,0,10,0" KeyDown="txtSearch_KeyDown" TextChanged="txtSearch_TextChanged"/>
+                            
+                            <Border Grid.Column="2" Width="1" Background="#E4E7EB" Margin="0,10"/>
+                            
+                            <ComboBox Grid.Column="3" x:Name="cboLoaiSP" materialDesign:HintAssist.Hint="Danh mục" materialDesign:TextFieldAssist.DecorationVisibility="Collapsed" BorderThickness="0" Background="Transparent" FontSize="15" Margin="15,0,0,0" VerticalAlignment="Center" DisplayMemberPath="TenLoai" SelectedValuePath="MaLoai" SelectionChanged="cboLoaiSP_SelectionChanged"/>
+                        </Grid>
+                    </Border>
+                    
+                    <Button Grid.Column="1" Content="TÌM" Background="#4CAF50" BorderThickness="0" Height="48" Padding="25,0" FontWeight="Bold" FontSize="15" Click="btnTimSP_Click" materialDesign:ButtonAssist.CornerRadius="8"/>
                 </Grid>
             </materialDesign:Card>
             
@@ -149,11 +165,13 @@
                             
                             <Grid Grid.Row="1" Margin="0,0,0,15">
                                 <TextBlock Text="Khách thanh toán:" FontSize="14" Foreground="#7F8C8D" VerticalAlignment="Center"/>
-                                <ComboBox x:Name="cboPTTT" Width="130" HorizontalAlignment="Right" Margin="0,0,110,0" FontSize="14">
-                                    <ComboBoxItem Content="Tiền mặt" IsSelected="True"/>
-                                    <ComboBoxItem Content="Chuyển khoản"/>
-                                    <ComboBoxItem Content="Quẹt thẻ"/>
-                                </ComboBox>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,110,0">
+                                    <ComboBox x:Name="cboPTTT" Width="130" FontSize="14" Margin="0,0,5,0">
+                                        <ComboBoxItem Content="Tiền mặt" IsSelected="True"/>
+                                        <ComboBoxItem Content="Chuyển khoản"/>
+                                        <ComboBoxItem Content="Quẹt thẻ"/>
+                                    </ComboBox>
+                                </StackPanel>
                                 <TextBox x:Name="txtKhachDua" Width="100" HorizontalAlignment="Right" TextAlignment="Right" materialDesign:HintAssist.Hint="Tiền nhận" Text="0" FontSize="14" FontWeight="SemiBold" TextChanged="txtTien_TextChanged" PreviewTextInput="NumberValidationTextBox"/>
                             </Grid>
                             

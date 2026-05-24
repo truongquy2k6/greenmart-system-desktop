@@ -26,6 +26,7 @@ namespace GreenMart.UserControls
     public partial class ucBanHang : UserControl
     {
         HoaDonBUS bus = new();
+        LoaiSanPhamBUS busLoai = new();
         ObservableCollection<CartItem> cart = new();
         string maKH = "";
         decimal tongTien = 0;
@@ -44,6 +45,14 @@ namespace GreenMart.UserControls
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
+            var dtLoai = busLoai.HienThi();
+            DataRow row = dtLoai.NewRow();
+            row["MaLoai"] = "";
+            row["TenLoai"] = "Tất cả danh mục";
+            dtLoai.Rows.InsertAt(row, 0);
+            cboLoaiSP.ItemsSource = dtLoai.DefaultView;
+            cboLoaiSP.SelectedIndex = 0;
+
             TimSP();
             txtSearch.Focus();
         }
@@ -51,7 +60,13 @@ namespace GreenMart.UserControls
         void btnTimSP_Click(object s, RoutedEventArgs e) => TimSP();
         void txtSearch_KeyDown(object s, KeyEventArgs e) { if (e.Key == Key.Enter) TimSP(); }
         void txtSearch_TextChanged(object s, TextChangedEventArgs e) { TimSP(); }
-        void TimSP() => dgSP.ItemsSource = bus.TimSP(txtSearch.Text.Trim(), MainWindow.CurrentCH).DefaultView;
+        void TimSP() 
+        { 
+            string maLoai = cboLoaiSP?.SelectedValue?.ToString() ?? "";
+            dgSP.ItemsSource = bus.TimSP(txtSearch.Text.Trim(), MainWindow.CurrentCH, maLoai).DefaultView; 
+        }
+
+        void cboLoaiSP_SelectionChanged(object s, SelectionChangedEventArgs e) { TimSP(); }
 
         void dgSP_DblClick(object s, MouseButtonEventArgs e) { AddToCart(); }
         void btnAddCart_Click(object s, RoutedEventArgs e) { AddToCart(); }
@@ -141,16 +156,27 @@ namespace GreenMart.UserControls
             
             decimal khachDua = 0;
             decimal.TryParse(txtKhachDua.Text.Replace(",", ""), out khachDua);
-            if (khachDua < tongTien && cboPTTT.SelectedIndex == 0) 
+            string pttt = (cboPTTT.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "Tiền mặt";
+
+            if (khachDua < tongTien && pttt == "Tiền mặt") 
             { 
                 MessageBox.Show("Khách đưa chưa đủ tiền!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Warning); 
                 return; 
             }
 
+            // VietQR Integration
+            if (pttt == "Chuyển khoản")
+            {
+                var qrWin = new PaymentQRWindow(tongTien, $"Thanh toan mua hang GreenMart") { Owner = Window.GetWindow(this) };
+                qrWin.ShowDialog();
+                if (!qrWin.IsPaid) return; // Hủy thanh toán
+                
+                khachDua = tongTien; // Tự động ghi nhận khách đã chuyển đủ
+            }
+
             try
             {
                 string maHD = bus.TaoMa();
-                string pttt = (cboPTTT.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "Tiền mặt";
                 decimal giamGia = 0;
                 decimal.TryParse(txtGiamGia.Text.Replace(",", ""), out giamGia);
 
