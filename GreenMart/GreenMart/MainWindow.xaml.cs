@@ -3,6 +3,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using GreenMart.UserControls;
+using Microsoft.Data.SqlClient;
+using System.Data;
+using DAL;
 
 namespace GreenMart
 {
@@ -17,6 +20,7 @@ namespace GreenMart
         public static string CurrentNV = "";
         public static string CurrentCH = "CH01";
         public static string CurrentRole = ""; // "Admin" | "Quản lý" | "Nhân viên kho" | "Nhân viên bán hàng"
+        private int _notificationCount = 0;
 
         public MainWindow(string hoTen = "Quản trị viên", string chucVu = "Admin", string maNV = "NV00", string maCH = "CH01")
         {
@@ -33,6 +37,20 @@ namespace GreenMart
 
             // Áp dụng phân quyền
             ApplyRolePermissions(chucVu);
+
+            // Load dữ liệu thông báo có sẵn từ Database
+            LoadInitialNotifications();
+
+            // Bắt đầu nhận thông báo thời gian thực
+            try
+            {
+                SqlDependency.Start(DatabaseHelper.ConnectionString);
+                RegisterNotificationDependency();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("SqlDependency error: " + ex.Message);
+            }
 
             // Hiển thị trang mặc định theo vai trò
             if (chucVu == "Nhân viên kho")
@@ -204,9 +222,163 @@ namespace GreenMart
             if (MessageBox.Show("Bạn có chắc chắn muốn đăng xuất?", "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
             {
                 try { new BUS.LichSuBUS().GhiNhanDangXuat(CurrentNV); } catch { }
+                try { SqlDependency.Stop(DatabaseHelper.ConnectionString); } catch { }
                 new LoginWindow().Show();
                 this.Close();
             }
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            try { SqlDependency.Stop(DatabaseHelper.ConnectionString); } catch { }
+            base.OnClosed(e);
+        }
+
+        private void btnNotifications_Click(object sender, RoutedEventArgs e)
+        {
+            popupNotifications.IsOpen = !popupNotifications.IsOpen;
+            if (popupNotifications.IsOpen)
+            {
+                _notificationCount = 0;
+                badgeNotif.Badge = "";
+            }
+        }
+
+        private void LoadInitialNotifications()
+        {
+            try
+            {
+                // Gọi stored procedure theo yêu cầu để dễ bảo trì
+                DataTable dt = DatabaseHelper.ExecuteQuery("sp_LayLichSuChinhSua");
+
+                if (dt.Rows.Count > 0)
+                {
+                    // Lấy tối đa 15 dòng gần nhất
+                    int count = Math.Min(15, dt.Rows.Count);
+                    // Lặp từ dưới lên để dòng mới nhất (index 0) được Insert lên đầu (index 0 của panel)
+                    for (int i = count - 1; i >= 0; i--)
+                    {
+                        DataRow row = dt.Rows[i];
+                        string maNV = row["MaNV"]?.ToString() ?? "";
+                        string bang = row["TenBang"]?.ToString() ?? "";
+                        string hd = row["HanhDong"]?.ToString() ?? "";
+                        string hoTen = row["HoTen"]?.ToString() ?? maNV;
+                        
+                        DateTime tg = DateTime.Now;
+                        if (row["ThoiGian"] != DBNull.Value)
+                            tg = Convert.ToDateTime(row["ThoiGian"]);
+
+                        // Có thể bỏ qua thao tác của chính mình nếu muốn, nhưng để khởi tạo ta hiển thị tất cả
+                        AddNotificationUI(hoTen, hd, bang, tg);
+                        
+                        _notificationCount++;
+                    }
+                    
+                    if (_notificationCount > 0)
+                    {
+                        badgeNotif.Badge = _notificationCount > 9 ? "9+" : _notificationCount.ToString();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Lỗi load notifications: " + ex.Message);
+            }
+        }
+
+        private void RegisterNotificationDependency()
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(DatabaseHelper.ConnectionString))
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = new SqlCommand(
+                        "SELECT MaLS, TenBang, HanhDong, MaNV, ThoiGian FROM dbo.LichSuChinhSua", conn))
+                    {
+                        cmd.Notification = null;
+                        SqlDependency dependency = new SqlDependency(cmd);
+                        dependency.OnChange += Dependency_OnChange;
+                        cmd.ExecuteReader();
+                    }
+                }
+            }
+            catch { }
+        }
+
+        private void Dependency_OnChange(object sender, SqlNotificationEventArgs e)
+        {
+            SqlDependency dependency = sender as SqlDependency;
+            if (dependency != null) dependency.OnChange -= Dependency_OnChange;
+
+            if (e.Type == SqlNotificationType.Change)
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    // Gọi stored procedure để lấy dòng mới nhất
+                    DataTable dt = DatabaseHelper.ExecuteQuery("sp_LayLichSuChinhSua");
+
+                    if (dt.Rows.Count > 0)
+                    {
+                        // Dòng mới nhất ở index 0 vì SP sắp xếp giảm dần theo thời gian
+                        DataRow row = dt.Rows[0];
+                        string maNV = row["MaNV"].ToString();
+                        
+                        // Không thông báo thao tác của chính mình
+                        if (maNV != CurrentNV)
+                        {
+                            string bang = row["TenBang"].ToString();
+                            string hd = row["HanhDong"].ToString();
+                            DateTime tg = Convert.ToDateTime(row["ThoiGian"]);
+                            string hoTen = row["HoTen"]?.ToString() ?? maNV;
+
+                            AddNotificationUI(hoTen, hd, bang, tg);
+                            _notificationCount++;
+                            badgeNotif.Badge = _notificationCount > 9 ? "9+" : _notificationCount.ToString();
+                        }
+                    }
+                });
+            }
+
+            // Đăng ký lại
+            RegisterNotificationDependency();
+        }
+
+        private void AddNotificationUI(string nvTen, string hd, string bang, DateTime tg)
+        {
+            if (txtNoNotif != null) txtNoNotif.Visibility = Visibility.Collapsed;
+
+            Border item = new Border
+            {
+                Background = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#F8F9FA")),
+                CornerRadius = new CornerRadius(5),
+                Padding = new Thickness(10),
+                Margin = new Thickness(10, 5, 10, 5)
+            };
+
+            StackPanel sp = new StackPanel();
+            
+            TextBlock txtTitle = new TextBlock
+            {
+                Text = $"{nvTen} vừa {hd} dữ liệu {bang}",
+                FontWeight = FontWeights.SemiBold,
+                Foreground = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#2C3E50")),
+                TextWrapping = TextWrapping.Wrap
+            };
+            
+            TextBlock txtTime = new TextBlock
+            {
+                Text = tg.ToString("dd/MM/yyyy HH:mm:ss"),
+                FontSize = 11,
+                Foreground = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#7F8C8D")),
+                Margin = new Thickness(0, 5, 0, 0)
+            };
+
+            sp.Children.Add(txtTitle);
+            sp.Children.Add(txtTime);
+            item.Child = sp;
+
+            pnlNotificationList.Children.Insert(0, item);
         }
     }
 }

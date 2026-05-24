@@ -9,7 +9,7 @@ namespace GreenMart.Services
 {
     public class GeminiService
     {
-        private string _apiKey = "YOUR_GEMINI_API_KEY_HERE";
+        private string _apiKey = "";
         private readonly string _endpoint;
 
         public GeminiService()

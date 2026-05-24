@@ -128,7 +128,35 @@ namespace GreenMart.UserControls
             TinhTienThua();
         }
 
-        void txtTien_TextChanged(object s, TextChangedEventArgs e) { UpdateTotal(); }
+        void txtTien_TextChanged(object s, TextChangedEventArgs e) 
+        {
+            var txt = s as TextBox;
+            if (txt == null) return;
+
+            string valueStr = txt.Text.Replace(",", "");
+            if (decimal.TryParse(valueStr, out decimal value))
+            {
+                txt.TextChanged -= txtTien_TextChanged;
+                
+                int caretIndex = txt.CaretIndex;
+                int oldLength = txt.Text.Length;
+                
+                txt.Text = value == 0 ? "0" : string.Format("{0:#,##0}", value);
+                
+                txt.CaretIndex = Math.Max(0, caretIndex + (txt.Text.Length - oldLength));
+                
+                txt.TextChanged += txtTien_TextChanged;
+            }
+            else if (txt.Text != "")
+            {
+                txt.TextChanged -= txtTien_TextChanged;
+                txt.Text = "0";
+                txt.CaretIndex = 1;
+                txt.TextChanged += txtTien_TextChanged;
+            }
+
+            UpdateTotal(); 
+        }
 
         void TinhTienThua()
         {

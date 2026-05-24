@@ -10,7 +10,7 @@ namespace DAL
     public class DatabaseHelper
     {
         // Chuỗi kết nối (Lưu ý: Trong thực tế nên để ở file app.config hoặc appsettings.json để bảo mật)
-        private static readonly string connectionString =
+        public static readonly string ConnectionString =
             @"Data Source=pyrex.myvnc.com,14330;Initial Catalog=QuanLyHeThongGreenMart;Persist Security Info=True;User ID=user;Password=123;TrustServerCertificate=True;";
 
         /// <summary>
@@ -19,7 +19,7 @@ namespace DAL
         /// <returns>SqlConnection</returns>
         public static SqlConnection GetConnection()
         {
-            return new SqlConnection(connectionString);
+            return new SqlConnection(ConnectionString);
         }
 
         /// <summary>
