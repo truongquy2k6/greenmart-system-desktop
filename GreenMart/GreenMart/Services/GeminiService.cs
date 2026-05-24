@@ -89,7 +89,7 @@ RÀNG BUỘC NGHIÊM NGẶT:
                     }
                     else
                     {
-                        return $"[Lỗi kết nối API]: {response.StatusCode} - Vui lòng kiểm tra lại API Key.";
+                        return $"[Lỗi API]: {response.StatusCode}\nChi tiết: {responseString}";
                     }
                 }
             }

@@ -36,6 +36,7 @@
                 </Border>
 
                 <Button Content="TÌM KIẾM" Background="#1A73E8" BorderThickness="0" Height="44" Padding="25,0" FontWeight="Bold" Click="btnTim_Click" materialDesign:ButtonAssist.CornerRadius="22" VerticalAlignment="Center"/>
+                <Button Content="ĐỒNG BỘ SP" Background="#F2994A" BorderThickness="0" Height="44" Padding="15,0" Margin="10,0,0,0" FontWeight="Bold" Click="btnDongBo1Kho_Click" materialDesign:ButtonAssist.CornerRadius="22" VerticalAlignment="Center" ToolTip="Nhập hàng loạt tất cả sản phẩm vào kho đang chọn"/>
                 <Button Content="＋ NHẬP HÀNG" Background="#34A853" BorderThickness="0" Height="44" Padding="20,0" Margin="10,0,0,0" FontWeight="Bold" Click="btnNhapHang_Click" materialDesign:ButtonAssist.CornerRadius="22" VerticalAlignment="Center"/>
             </StackPanel>
         </Grid>

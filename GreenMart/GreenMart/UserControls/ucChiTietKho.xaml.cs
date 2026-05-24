@@ -93,6 +93,36 @@ namespace GreenMart.UserControls
             e.Handled = regex.IsMatch(e.Text);
         }
 
+        void btnDongBo1Kho_Click(object s, RoutedEventArgs e)
+        {
+            if (cboKho.SelectedValue == null)
+            {
+                MessageBox.Show("Vui lòng chọn một kho cụ thể ở danh sách thả xuống trước khi đồng bộ!", "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            string maKho = cboKho.SelectedValue.ToString()!;
+            string tenKho = cboKho.Text;
+
+            if (MessageBox.Show($"Bạn có muốn tự động đồng bộ tất cả sản phẩm vào kho '{tenKho}' (với số lượng bằng 0 nếu chưa có) không?", "Xác nhận đồng bộ", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            {
+                try
+                {
+                    var parameters = new Microsoft.Data.SqlClient.SqlParameter[]
+                    {
+                        new("@MaKho", maKho)
+                    };
+                    DAL.DatabaseHelper.ExecuteNonQuery("sp_DongBo1Kho", parameters);
+                    LoadByKho(maKho);
+                    MessageBox.Show($"Đã đồng bộ sản phẩm vào kho '{tenKho}' thành công!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Lỗi đồng bộ", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+
         void btnNhapHang_Click(object s, RoutedEventArgs e)
         {
             isEdit = false;

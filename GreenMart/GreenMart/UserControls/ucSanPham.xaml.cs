@@ -174,6 +174,22 @@ namespace GreenMart.UserControls
 
         void btnHuyDetail_Click(object s, RoutedEventArgs e) => popDetail.Visibility = Visibility.Collapsed;
 
+        void btnDongBo_Click(object s, RoutedEventArgs e)
+        {
+            if (MessageBox.Show("Bạn có muốn tự động đồng bộ tất cả sản phẩm vào chi tiết kho (với số lượng bằng 0 nếu chưa có) không?", "Xác nhận đồng bộ", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            {
+                try
+                {
+                    DAL.DatabaseHelper.ExecuteNonQuery("sp_DongBoKho");
+                    MessageBox.Show("Đã đồng bộ sản phẩm vào kho thành công!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Lỗi đồng bộ", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+
         void btnThem_Click(object s, RoutedEventArgs e)
         {
             isEdit = false;
