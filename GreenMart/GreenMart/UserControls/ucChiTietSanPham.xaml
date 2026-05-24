@@ -1,0 +1,126 @@
+<UserControl x:Class="GreenMart.UserControls.ucChiTietSanPham"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Background="White" Margin="0,0,0,20" CornerRadius="12" Padding="15">
+            <Grid>
+                <StackPanel Orientation="Horizontal">
+                    <Button Style="{StaticResource MaterialDesignIconButton}" Click="btnBack_Click" ToolTip="Quay lại">
+                        <materialDesign:PackIcon Kind="ArrowLeft" Width="24" Height="24" Foreground="#1B5E20"/>
+                    </Button>
+                    <TextBlock x:Name="txtHeaderName" Text="Chi tiết sản phẩm" FontSize="20" FontWeight="Bold" Foreground="#2C3E50" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Border Background="#E8F5E9" CornerRadius="12" Padding="12,5" VerticalAlignment="Center">
+                        <TextBlock x:Name="txtStatus" Text="Đang kinh doanh" Foreground="#2E7D32" FontWeight="Bold" FontSize="13"/>
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Content -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="350"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Image Card -->
+            <materialDesign:Card UniformCornerRadius="12" Margin="0,0,20,0" VerticalAlignment="Top">
+                <StackPanel>
+                    <Border Height="300" Background="#F1F3F4">
+                        <Grid>
+                            <materialDesign:PackIcon Kind="ImageOutline" Width="64" Height="64" Foreground="#BDC3C7" HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="iconNoImg"/>
+                            <Image x:Name="imgSP" Stretch="UniformToFill" Visibility="Collapsed"/>
+                        </Grid>
+                    </Border>
+                    <Border Padding="20">
+                        <StackPanel>
+                            <TextBlock Text="Mã sản phẩm" Foreground="#7F8C8D" FontSize="12"/>
+                            <TextBlock x:Name="txtMa" Text="SP001" FontSize="18" FontWeight="Bold" Foreground="#2C3E50" Margin="0,2,0,15"/>
+                            
+                            <TextBlock Text="Đơn giá niêm yết" Foreground="#7F8C8D" FontSize="12"/>
+                            <TextBlock x:Name="txtGia" Text="50.000 đ" FontSize="24" FontWeight="Black" Foreground="#2E7D32" Margin="0,2,0,5"/>
+                            <TextBlock x:Name="txtDVT" Text="Đơn vị: Kg" FontSize="14" Foreground="#34495E"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </materialDesign:Card>
+
+            <!-- Details Info -->
+            <StackPanel Grid.Column="1">
+                <!-- General Info -->
+                <materialDesign:Card UniformCornerRadius="12" Padding="25" Margin="0,0,0,20">
+                    <StackPanel>
+                        <TextBlock Text="Thông tin cơ bản" FontSize="16" FontWeight="Bold" Foreground="#2C3E50" Margin="0,0,0,20"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <StackPanel Margin="0,0,20,20">
+                                <TextBlock Text="Tên sản phẩm" Foreground="#7F8C8D" FontSize="12" Margin="0,0,0,5"/>
+                                <TextBlock x:Name="txtTen" Text="Táo Envy Mỹ" FontSize="15" FontWeight="SemiBold" Foreground="#2C3E50"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1" Margin="0,0,0,20">
+                                <TextBlock Text="Loại sản phẩm" Foreground="#7F8C8D" FontSize="12" Margin="0,0,0,5"/>
+                                <TextBlock x:Name="txtLoai" Text="Trái cây nhập khẩu" FontSize="15" FontWeight="SemiBold" Foreground="#2C3E50"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="1" Margin="0,0,20,20">
+                                <TextBlock Text="Nhà cung cấp" Foreground="#7F8C8D" FontSize="12" Margin="0,0,0,5"/>
+                                <TextBlock x:Name="txtNCC" Text="Công ty XNK Trái Cây Toàn Cầu" FontSize="15" FontWeight="SemiBold" Foreground="#2C3E50"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,0,0,20">
+                                <TextBlock Text="Mô tả tóm tắt" Foreground="#7F8C8D" FontSize="12" Margin="0,0,0,5"/>
+                                <TextBlock x:Name="txtMoTaShort" Text="Giòn, ngọt, thơm đậm đà." FontSize="15" Foreground="#2C3E50"/>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </materialDesign:Card>
+
+                <!-- Detailed Description -->
+                <materialDesign:Card UniformCornerRadius="12" Padding="25" Margin="0,0,0,20" VerticalAlignment="Stretch">
+                    <StackPanel>
+                        <TextBlock Text="Mô tả chi tiết" FontSize="16" FontWeight="Bold" Foreground="#2C3E50" Margin="0,0,0,15"/>
+                        <TextBlock x:Name="txtMoTaFull" TextWrapping="Wrap" FontSize="14" Foreground="#34495E" LineHeight="22">
+                            Sản phẩm được tuyển chọn kỹ lưỡng từ những trang trại đạt tiêu chuẩn quốc tế. Đảm bảo tươi ngon, không chất bảo quản, an toàn cho sức khỏe người tiêu dùng.
+                        </TextBlock>
+                    </StackPanel>
+                </materialDesign:Card>
+
+                <!-- Inventory Status -->
+                <materialDesign:Card UniformCornerRadius="12" Padding="25">
+                    <StackPanel>
+                        <Grid Margin="0,0,0,15">
+                            <TextBlock Text="Tình trạng tồn kho" FontSize="16" FontWeight="Bold" Foreground="#2C3E50"/>
+                            <TextBlock x:Name="txtTongTon" Text="Tổng tồn: 150" HorizontalAlignment="Right" Foreground="#1B5E20" FontWeight="Bold"/>
+                        </Grid>
+                        <DataGrid x:Name="dgKho" AutoGenerateColumns="False" IsReadOnly="True" MaxHeight="150" HeadersVisibility="Column" Background="Transparent" BorderThickness="0">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="KHO HÀNG" Binding="{Binding TenKho}" Width="*"/>
+                                <DataGridTextColumn Header="SỐ LƯỢNG" Binding="{Binding SoLuong}" Width="120" FontWeight="Bold"/>
+                                <DataGridTextColumn Header="VỊ TRÍ" Binding="{Binding DiaChi}" Width="1.5*"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </StackPanel>
+                </materialDesign:Card>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

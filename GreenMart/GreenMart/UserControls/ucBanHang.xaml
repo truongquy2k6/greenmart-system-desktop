@@ -1,0 +1,180 @@
+<UserControl x:Class="GreenMart.UserControls.ucBanHang"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             Loaded="UserControl_Loaded">
+    <Grid Background="#F5F7FA">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="480"/>
+        </Grid.ColumnDefinitions>
+        
+        <!-- Left: Search + Product list -->
+        <Grid Margin="0,0,15,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            
+            <materialDesign:Card UniformCornerRadius="10" Padding="15,5" Margin="0,0,0,15" Background="White">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="Magnify" Width="26" Height="26" Foreground="#7F8C8D" VerticalAlignment="Center" Margin="5,0,15,0"/>
+                        <TextBox x:Name="txtSearch" Width="300" Height="45" BorderThickness="0" FontSize="16" materialDesign:HintAssist.Hint="Tìm theo tên hoặc mã SP..." materialDesign:TextFieldAssist.DecorationVisibility="Hidden" VerticalAlignment="Center" KeyDown="txtSearch_KeyDown" TextChanged="txtSearch_TextChanged"/>
+                    </StackPanel>
+                    <Button Grid.Column="1" Content="TÌM" Background="#4CAF50" BorderThickness="0" Height="45" Padding="25,0" FontWeight="Bold" FontSize="15" Click="btnTimSP_Click" materialDesign:ButtonAssist.CornerRadius="8"/>
+                </Grid>
+            </materialDesign:Card>
+            
+            <materialDesign:Card Grid.Row="1" UniformCornerRadius="10" Padding="0" Background="White">
+                <DataGrid x:Name="dgSP" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column" BorderThickness="0" GridLinesVisibility="Horizontal" RowHeight="60" FontSize="14" Background="Transparent" RowBackground="White" AlternatingRowBackground="#FDFDFD" HorizontalGridLinesBrush="#F0F2F5" VerticalGridLinesBrush="Transparent" MouseDoubleClick="dgSP_DblClick" SelectionMode="Single">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="MÃ SP" Binding="{Binding MaSP}" Width="1*" FontWeight="SemiBold" Foreground="#7F8C8D"/>
+                        <DataGridTextColumn Header="TÊN SẢN PHẨM" Binding="{Binding TenSP}" Width="3*"/>
+                        <DataGridTextColumn Header="ĐƠN GIÁ" Binding="{Binding DonGia, StringFormat='{}{0:#,##0} ₫'}" Width="1.5*" Foreground="#2C3E50" FontWeight="Bold"/>
+                        <DataGridTextColumn Header="ĐVT" Binding="{Binding DonViTinh}" Width="0.8*"/>
+                        <DataGridTemplateColumn Header="TỒN" Width="80">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Border Background="#E8F5E9" CornerRadius="6" Padding="8,4" HorizontalAlignment="Left">
+                                        <TextBlock Text="{Binding TonKho}" Foreground="#2E7D32" FontWeight="Bold"/>
+                                    </Border>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="" Width="80">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Style="{StaticResource MaterialDesignIconButton}" Background="#E3F2FD" Foreground="#1565C0" Width="36" Height="36" Padding="0" ToolTip="Thêm vào giỏ" Click="btnAddCart_Click">
+                                        <materialDesign:PackIcon Kind="CartPlus" Width="20" Height="20"/>
+                                    </Button>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </materialDesign:Card>
+        </Grid>
+        
+        <!-- Right: Cart + Payment -->
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            
+            <materialDesign:Card UniformCornerRadius="10" Padding="15" Margin="0,0,0,15" Background="White">
+                <StackPanel>
+                    <TextBlock Text="Khách hàng" FontWeight="Bold" FontSize="15" Foreground="#7F8C8D" Margin="0,0,0,10"/>
+                    <Grid Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox x:Name="txtSDT" materialDesign:HintAssist.Hint="SĐT khách hàng" Style="{StaticResource MaterialDesignFloatingHintTextBox}" FontSize="15" Margin="0,0,15,0" KeyDown="txtSDT_KeyDown" PreviewTextInput="NumberValidationTextBox" MaxLength="10"/>
+                        <Button Grid.Column="1" Content="Kiểm tra" Style="{StaticResource MaterialDesignOutlinedButton}" Foreground="#4CAF50" BorderBrush="#4CAF50" Height="40" Click="btnTimKH_Click"/>
+                    </Grid>
+                    <Border Background="#F9FAFB" CornerRadius="8" Padding="12" BorderBrush="#EEEEEE" BorderThickness="1">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="AccountCircle" Width="22" Height="22" Foreground="#95A5A6" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                            <TextBlock x:Name="txtKH" Text="Khách vãng lai" Foreground="#2C3E50" FontWeight="SemiBold" FontSize="14" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </materialDesign:Card>
+            
+            <materialDesign:Card Grid.Row="1" UniformCornerRadius="10" Padding="15" Background="White">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                        <materialDesign:PackIcon Kind="BasketOutline" Width="24" Height="24" Foreground="#2C3E50" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                        <TextBlock Text="Giỏ hàng" FontWeight="Bold" FontSize="18" Foreground="#2C3E50" VerticalAlignment="Center"/>
+                        <TextBlock x:Name="txtCartCount" Text="(0)" FontWeight="Bold" FontSize="18" Foreground="#7F8C8D" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                    </StackPanel>
+                    
+                    <DataGrid x:Name="dgCart" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="None" BorderThickness="0" GridLinesVisibility="None" RowHeight="50" FontSize="14" Background="Transparent" RowBackground="White" AlternatingRowBackground="#FDFDFD" SelectionMode="Single">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Binding="{Binding TenSP}" Width="3*" Foreground="#2C3E50"/>
+                            <DataGridTemplateColumn Width="1.5*">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Border BorderBrush="#EEEEEE" BorderThickness="1" CornerRadius="4" Background="White">
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                <Button Content="-" Width="26" Height="26" Padding="0" Background="Transparent" Foreground="#7F8C8D" BorderThickness="0" Click="btnGiam_Click"/>
+                                                <TextBlock Text="{Binding SoLuong}" Width="24" TextAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Foreground="#2C3E50"/>
+                                                <Button Content="+" Width="26" Height="26" Padding="0" Background="Transparent" Foreground="#7F8C8D" BorderThickness="0" Click="btnTang_Click"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Binding="{Binding ThanhTien, StringFormat='{}{0:#,##0}'}" Width="1.5*" Foreground="#E65100" FontWeight="Bold">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock"><Setter Property="HorizontalAlignment" Value="Right"/></Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTemplateColumn Width="0.6*">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Style="{StaticResource MaterialDesignIconButton}" Background="Transparent" Foreground="#E74C3C" Width="30" Height="30" Padding="0" Click="btnXoaCart_Click">
+                                            <materialDesign:PackIcon Kind="TrashCanOutline" Width="18" Height="18"/>
+                                        </Button>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    
+                    <Border Grid.Row="2" BorderBrush="#EEEEEE" BorderThickness="0,1,0,0" Margin="0,10,0,0" Padding="0,15,0,0">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            
+                            <Grid Margin="0,0,0,15">
+                                <TextBlock Text="Giảm giá:" FontSize="14" Foreground="#7F8C8D" VerticalAlignment="Center"/>
+                                <TextBox x:Name="txtGiamGia" Width="100" HorizontalAlignment="Right" TextAlignment="Right" materialDesign:HintAssist.Hint="Nhập số tiền" Text="0" FontSize="14" FontWeight="SemiBold" TextChanged="txtTien_TextChanged" PreviewTextInput="NumberValidationTextBox"/>
+                            </Grid>
+                            
+                            <Grid Grid.Row="1" Margin="0,0,0,15">
+                                <TextBlock Text="Khách thanh toán:" FontSize="14" Foreground="#7F8C8D" VerticalAlignment="Center"/>
+                                <ComboBox x:Name="cboPTTT" Width="130" HorizontalAlignment="Right" Margin="0,0,110,0" FontSize="14">
+                                    <ComboBoxItem Content="Tiền mặt" IsSelected="True"/>
+                                    <ComboBoxItem Content="Chuyển khoản"/>
+                                    <ComboBoxItem Content="Quẹt thẻ"/>
+                                </ComboBox>
+                                <TextBox x:Name="txtKhachDua" Width="100" HorizontalAlignment="Right" TextAlignment="Right" materialDesign:HintAssist.Hint="Tiền nhận" Text="0" FontSize="14" FontWeight="SemiBold" TextChanged="txtTien_TextChanged" PreviewTextInput="NumberValidationTextBox"/>
+                            </Grid>
+                            
+                            <Grid Grid.Row="2">
+                                <TextBlock Text="Tiền thừa trả khách:" FontSize="14" Foreground="#7F8C8D" VerticalAlignment="Center"/>
+                                <TextBlock x:Name="txtTienThua" Text="0 ₫" FontSize="16" FontWeight="Bold" Foreground="#2C3E50" HorizontalAlignment="Right"/>
+                            </Grid>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </materialDesign:Card>
+            
+            <materialDesign:Card Grid.Row="2" UniformCornerRadius="10" Padding="20" Margin="0,15,0,0" Background="#2C3E50">
+                <StackPanel>
+                    <Grid Margin="0,0,0,15">
+                        <TextBlock Text="TỔNG TIỀN" FontSize="15" FontWeight="SemiBold" Foreground="#BDC3C7" VerticalAlignment="Center"/>
+                        <TextBlock x:Name="txtTong" Text="0 ₫" FontSize="36" FontWeight="Black" Foreground="#4CAF50" HorizontalAlignment="Right"/>
+                    </Grid>
+                    <Button Content="THANH TOÁN" Background="#4CAF50" Foreground="White" FontSize="18" FontWeight="Bold" Padding="0,10" Height="55" BorderThickness="0" Cursor="Hand" materialDesign:ButtonAssist.CornerRadius="8" Click="btnThanhToan_Click"/>
+                </StackPanel>
+            </materialDesign:Card>
+        </Grid>
+    </Grid>
+</UserControl>
