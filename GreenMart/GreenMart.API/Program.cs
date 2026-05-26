@@ -249,7 +249,7 @@ app.MapPost("/api/hoadon", (CreateInvoiceRequest request) =>
         if (request.ChiTiet == null || request.ChiTiet.Count == 0)
         {
             return Results.BadRequest(new { message = "Chi tiết đơn hàng không được để trống." });
-        }
+        }   
 
         // Tự động sinh mã hóa đơn
         string maHD = hoaDonBus.TaoMa();
@@ -402,7 +402,25 @@ var chatbotHandler = async (HttpContext context) =>
 {
     try
     {
-        string apiKey = builder.Configuration["ApiKey"] ?? "AIzaSyB-9-HFrZMs2XuUQEjsGTCy-tO0Rj4qyV8"; // Load working key from appsettings.json
+        string? clientType = context.Request.Headers["X-Client-Type"];
+        string? apiKey = null;
+
+        if (string.Equals(clientType, "Desktop", StringComparison.OrdinalIgnoreCase))
+        {
+            apiKey = Environment.GetEnvironmentVariable("GEMINI_API_KEY_Desktop");
+        }
+        else if (string.Equals(clientType, "Mobile", StringComparison.OrdinalIgnoreCase))
+        {
+            apiKey = Environment.GetEnvironmentVariable("GEMINI_API_KEY_Mobile");
+        }
+
+        // Fallback hierarchy: Generic environment key -> Mobile key -> Desktop key -> Appsettings config -> Default placeholder
+        apiKey ??= Environment.GetEnvironmentVariable("GEMINI_API_KEY")
+            ?? Environment.GetEnvironmentVariable("GEMINI_API_KEY_Mobile")
+            ?? Environment.GetEnvironmentVariable("GEMINI_API_KEY_Desktop")
+            ?? builder.Configuration["ApiKey"]
+            ?? "YOUR_GEMINI_API_KEY_HERE";
+
         using var reader = new StreamReader(context.Request.Body);
         string requestBody = await reader.ReadToEndAsync();
         

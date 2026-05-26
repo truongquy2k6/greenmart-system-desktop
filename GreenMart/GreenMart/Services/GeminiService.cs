@@ -14,6 +14,7 @@ namespace GreenMart.Services
 
         public GeminiService()
         {
+            string apiUrl = "https://greenmart-api.onrender.com/";
             try
             {
                 string configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json");
@@ -21,15 +22,16 @@ namespace GreenMart.Services
                 {
                     string jsonString = File.ReadAllText(configPath);
                     using JsonDocument doc = JsonDocument.Parse(jsonString);
-                    if (doc.RootElement.TryGetProperty("Gemini", out var root))
+                    if (doc.RootElement.TryGetProperty("ApiUrl", out var urlElem))
                     {
-                        _apiKey = root.GetProperty("ApiKey").GetString() ?? _apiKey;
+                        apiUrl = urlElem.GetString() ?? apiUrl;
                     }
                 }
             }
             catch { }
             
-            _endpoint = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key={_apiKey}";
+            if (!apiUrl.EndsWith("/")) apiUrl += "/";
+            _endpoint = $"{apiUrl}api/chatbot";
         }
 
         public async Task<string> SendMessageAsync(string userMessage, string contextData)
@@ -38,6 +40,9 @@ namespace GreenMart.Services
             {
                 using (var client = new HttpClient())
                 {
+                    // Add header to tell the backend to use the Desktop Gemini API Key
+                    client.DefaultRequestHeaders.Add("X-Client-Type", "Desktop");
+
                     var requestBody = new
                     {
                         system_instruction = new
@@ -63,10 +68,10 @@ RÀNG BUỘC NGHIÊM NGẶT:
                         {
                             new
                             {
-                                parts = new[]
-                                {
-                                    new { text = $"[Dữ liệu hệ thống hiện tại (Hãy dùng để trả lời nếu cần thống kê)]: {contextData}\n\n[Câu hỏi của người dùng]: {userMessage}" }
-                                }
+                                  parts = new[]
+                                  {
+                                      new { text = $"[Dữ liệu hệ thống hiện tại (Hãy dùng để trả lời nếu cần thống kê)]: {contextData}\n\n[Câu hỏi của người dùng]: {userMessage}" }
+                                  }
                             }
                         }
                     };
