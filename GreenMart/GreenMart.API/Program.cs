@@ -272,42 +272,66 @@ app.MapPost("/api/hoadon", (CreateInvoiceRequest request) =>
         string? maKHMapped = string.IsNullOrWhiteSpace(request.MaKH) || request.MaKH == "null" ? null : request.MaKH.Trim();
         string? maKMMapped = string.IsNullOrWhiteSpace(request.MaKM) || request.MaKM == "null" ? null : request.MaKM.Trim();
 
-        hoaDonBus.ThemHoaDon(
-            maHD.Trim(),
-            request.TongTien,
-            maKHMapped!,
-            maNVDefault,
-            maKMMapped,
-            request.GiamGia,
-            ptttMapped
-        );
-
-        // 2. Thêm từng sản phẩm vào chi tiết hóa đơn
-        foreach (var item in request.ChiTiet)
+        using (var conn = new Microsoft.Data.SqlClient.SqlConnection(DAL.DatabaseHelper.ConnectionString))
         {
-            hoaDonBus.ThemChiTiet(maHD.Trim(), item.MaSP.Trim(), item.SoLuong, item.DonGia);
-        }
-
-        // 3. Tự động đồng bộ cộng điểm tích lũy thành viên thực tế vào SQL Server (10.000đ = 1 điểm)
-        if (!string.IsNullOrEmpty(maKHMapped))
-        {
-            try
+            conn.Open();
+            using (var trans = conn.BeginTransaction())
             {
-                using (var conn = new Microsoft.Data.SqlClient.SqlConnection(DAL.DatabaseHelper.ConnectionString))
+                try
                 {
-                    conn.Open();
+                    // 1. Tạo hóa đơn
                     using (var cmd = conn.CreateCommand())
                     {
-                        cmd.CommandText = "UPDATE KhachHang SET DiemTichLuy = DiemTichLuy + @Points WHERE MaKH = @MaKH";
-                        cmd.Parameters.AddWithValue("@Points", (int)(request.TongTien / 10000));
-                        cmd.Parameters.AddWithValue("@MaKH", maKHMapped);
+                        cmd.Transaction = trans;
+                        cmd.CommandText = "sp_ThemHoaDon";
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@MaHD", maHD.Trim());
+                        cmd.Parameters.AddWithValue("@TongTien", request.TongTien);
+                        cmd.Parameters.AddWithValue("@MaKH", (object?)maKHMapped ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@MaNV", maNVDefault);
+                        cmd.Parameters.AddWithValue("@MaKM", (object?)maKMMapped ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@GiamGia", request.GiamGia);
+                        cmd.Parameters.AddWithValue("@PhuongThucThanhToan", ptttMapped);
                         cmd.ExecuteNonQuery();
                     }
+
+                    // 2. Thêm từng sản phẩm vào chi tiết hóa đơn
+                    foreach (var item in request.ChiTiet)
+                    {
+                        using (var cmd = conn.CreateCommand())
+                        {
+                            cmd.Transaction = trans;
+                            cmd.CommandText = "sp_ThemChiTietHD";
+                            cmd.CommandType = CommandType.StoredProcedure;
+                            cmd.Parameters.AddWithValue("@MaHD", maHD.Trim());
+                            cmd.Parameters.AddWithValue("@MaSP", item.MaSP.Trim());
+                            cmd.Parameters.AddWithValue("@SoLuong", item.SoLuong);
+                            cmd.Parameters.AddWithValue("@DonGia", item.DonGia);
+                            cmd.ExecuteNonQuery();
+                        }
+                    }
+
+                    // 3. Tự động đồng bộ cộng điểm tích lũy thành viên thực tế vào SQL Server (10.000đ = 1 điểm)
+                    if (!string.IsNullOrEmpty(maKHMapped))
+                    {
+                        using (var cmd = conn.CreateCommand())
+                        {
+                            cmd.Transaction = trans;
+                            cmd.CommandText = "UPDATE KhachHang SET DiemTichLuy = DiemTichLuy + @Points WHERE MaKH = @MaKH";
+                            cmd.CommandType = CommandType.Text;
+                            cmd.Parameters.AddWithValue("@Points", (int)(request.TongTien / 10000));
+                            cmd.Parameters.AddWithValue("@MaKH", maKHMapped);
+                            cmd.ExecuteNonQuery();
+                        }
+                    }
+
+                    trans.Commit();
                 }
-            }
-            catch (Exception ptEx)
-            {
-                Console.WriteLine($"[GreenMart] Lỗi cộng điểm: {ptEx.Message}");
+                catch (Exception)
+                {
+                    trans.Rollback();
+                    throw;
+                }
             }
         }
 
@@ -315,8 +339,8 @@ app.MapPost("/api/hoadon", (CreateInvoiceRequest request) =>
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"[EMERGENCY FALLBACK ACTIVE] Checkout failed, returning HD01ER. Error details: {ex}");
-        return Results.Ok(new { maHD = "HD01ER", message = "Đặt hàng thành công!" });
+        Console.WriteLine($"[GreenMart] Checkout transaction failed: {ex}");
+        return Results.BadRequest(new { message = ex.Message });
     }
 });
 
