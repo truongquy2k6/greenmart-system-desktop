@@ -14,6 +14,12 @@ builder.Services.AddCors(options =>
     });
 });
 
+// Giữ nguyên PascalCase giống như cột Database và Entity của Mobile App
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.PropertyNamingPolicy = null;
+});
+
 var app = builder.Build();
 
 app.UseCors("AllowAll");
