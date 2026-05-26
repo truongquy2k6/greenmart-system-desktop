@@ -49,7 +49,10 @@ app.MapGet("/api/sanpham", (string? kw, string? maLoai) =>
             MoTa = row["MoTa"].ToString()?.Trim() ?? "",
             MaNCC = row["MaNCC"].ToString()?.Trim() ?? "",
             MaLoai = row["MaLoai"].ToString()?.Trim() ?? "",
-            TrangThai = row["TrangThai"].ToString()?.Trim() ?? ""
+            TrangThai = row["TrangThai"].ToString()?.Trim() ?? "",
+            NgayTao = row.Table.Columns.Contains("NgayTao") && row["NgayTao"] != DBNull.Value 
+                ? new DateTimeOffset(Convert.ToDateTime(row["NgayTao"])).ToUnixTimeMilliseconds() 
+                : DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
         }).ToList();
 
         if (!string.IsNullOrEmpty(kw))
@@ -398,7 +401,7 @@ var chatbotHandler = async (HttpContext context) =>
 {
     try
     {
-        string apiKey = "AIzaSyCxV2b-w2mCqX-w-n2E1kZ-2C"; // Dummy or real Gemini key placeholder, but in practice read from headers/config
+        string apiKey = builder.Configuration["ApiKey"] ?? "AIzaSyB-9-HFrZMs2XuUQEjsGTCy-tO0Rj4qyV8"; // Load working key from appsettings.json
         using var reader = new StreamReader(context.Request.Body);
         string requestBody = await reader.ReadToEndAsync();
         
