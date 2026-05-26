@@ -3,6 +3,12 @@ using System.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Tránh lỗi vượt giới hạn inotify instances trên Render (Linux) bằng cách tắt reloadOnChange
+builder.Configuration.Sources.Clear();
+builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: false);
+builder.Configuration.AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: false);
+builder.Configuration.AddEnvironmentVariables();
+
 // Cấu hình CORS để cho phép ứng dụng di động kết nối (ngrok / IP nội bộ)
 builder.Services.AddCors(options =>
 {
