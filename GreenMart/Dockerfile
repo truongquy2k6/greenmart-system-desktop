@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build-env
 WORKDIR /app
 
 # Copy solution and project files first to restore dependencies
@@ -14,7 +14,7 @@ COPY . ./
 RUN dotnet publish GreenMart.API/GreenMart.API.csproj -c Release -o out
 
 # Create runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:8.0
+FROM mcr.microsoft.com/dotnet/aspnet:10.0
 WORKDIR /app
 COPY --from=build-env /app/out .
 EXPOSE 80
