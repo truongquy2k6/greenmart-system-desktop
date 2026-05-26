@@ -472,7 +472,8 @@ var chatbotHandler = async (HttpContext context) =>
 app.MapPost("/api/chatbot/ask", chatbotHandler);
 app.MapPost("/api/chatbot", chatbotHandler);
 
-app.Run();
+var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
+app.Run($"http://0.0.0.0:{port}");
 
 // ---------------- CLASS HỖ TRỢ / REQUEST DTO ----------------
 public record RegisterCustomerRequest(string HoTen, string SoDienThoai, string? DiaChi, string? Email);
