@@ -394,7 +394,7 @@ app.MapGet("/api/cuahang/{maCH}/cauhinh", (string maCH) =>
 });
 
 // ---------------- API CHATBOT AI SONG KHỎE (PROXY QUA GEMINI) ----------------
-app.MapPost("/api/chatbot/ask", async (HttpContext context) =>
+var chatbotHandler = async (HttpContext context) =>
 {
     try
     {
@@ -415,7 +415,10 @@ app.MapPost("/api/chatbot/ask", async (HttpContext context) =>
     {
         return Results.Problem(ex.Message);
     }
-});
+};
+
+app.MapPost("/api/chatbot/ask", chatbotHandler);
+app.MapPost("/api/chatbot", chatbotHandler);
 
 app.Run();
 
